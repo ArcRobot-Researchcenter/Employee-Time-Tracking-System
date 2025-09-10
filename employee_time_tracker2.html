@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Time Tracking System</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icon library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .view, .modal {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-overlay {
+            animation: fadeInOverlay 0.3s ease-in-out;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .profile-pic-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+        }
+        .input {
+             @apply mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Main Application Container -->
+    <div id="app-container">
+
+        <!-- Login View -->
+        <div id="login-view" class="view min-h-screen flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-700">EMPLOYEE TIME TRACKING </h1>
+                    <p class="text-gray-500">Sign in to track your work hours</p>
+                </div>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-600">Email</label>
+                        <input type="email" id="email" value="employee@example.com" class="input" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-600">Password</label>
+                        <input type="password" id="password" value="password123" class="input" required>
+                    </div>
+                    <p id="login-error" class="text-red-500 text-sm text-center mb-4"></p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="employee-login-btn" type="button" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">Login as Employee</button>
+                        <button id="admin-login-btn" type="button" class="w-full bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300">Login as Admin</button>
+                    </div>
+                </form>
+                <p class="text-center text-sm text-gray-500 mt-6">
+                    Don't have an account? <a href="#" id="show-signup-link" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Signup View -->
+        <div id="signup-view" class="view hidden min-h-screen flex items-center justify-center p-4">
+            <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
+                <h1 class="text-2xl font-bold text-gray-700 mb-6">Create Employee Account</h1>
+                <form id="signup-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="signup-name" class="block text-sm font-medium text-gray-600">Full Name</label>
+                            <input type="text" id="signup-name" class="input" required>
+                        </div>
+                        <div>
+                            <label for="signup-staff-id" class="block text-sm font-medium text-gray-600">Staff ID</label>
+                            <input type="text" id="signup-staff-id" class="input" required>
+                        </div>
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-600">Email</label>
+                            <input type="email" id="signup-email" class="input" required>
+                        </div>
+                        <div>
+                            <label for="signup-password" class="block text-sm font-medium text-gray-600">Password</label>
+                            <input type="password" id="signup-password" class="input" required>
+                        </div>
+                        <div>
+                            <label for="signup-department" class="block text-sm font-medium text-gray-600">Department</label>
+                            <input type="text" id="signup-department" class="input" required>
+                        </div>
+                        <div>
+                            <label for="signup-sex" class="block text-sm font-medium text-gray-600">Sex</label>
+                            <select id="signup-sex" class="input" required>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center gap-4">
+                        <img id="signup-pic-preview" src="https://placehold.co/100x100/e2e8f0/e2e8f0" alt="Profile preview" class="profile-pic-preview"/>
+                        <div>
+                            <label for="signup-picture" class="block text-sm font-medium text-gray-600">Profile Picture</label>
+                            <input type="file" id="signup-picture" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+                    </div>
+                    <p id="signup-error" class="text-red-500 text-sm text-center my-4"></p>
+                    <button type="submit" class="w-full mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Create Account</button>
+                </form>
+                <p class="text-center text-sm text-gray-500 mt-6">
+                    Already have an account? <a href="#" id="show-login-link" class="font-medium text-indigo-600 hover:text-indigo-500">Log in</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Employee View -->
+        <div id="employee-view" class="view hidden">
+            <header class="bg-white shadow-md">
+                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <div class="text-2xl font-bold text-indigo-600">EMPLOYEE TIME TRACKING</div>
+                    <div class="flex items-center space-x-4">
+                        <img id="employee-avatar" class="avatar" alt="Avatar">
+                        <span id="welcome-msg" class="font-medium"></span>
+                        <button id="employee-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Logout</button>
+                    </div>
+                </nav>
+            </header>
+            <main class="container mx-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
+                        <div id="current-time" class="text-4xl font-bold text-gray-800"></div>
+                        <div id="current-date" class="text-lg text-gray-500 mb-6"></div>
+                        <p id="employee-status" class="mb-4 text-xl font-semibold"></p>
+                        <button id="clock-btn" class="w-48 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"></button>
+                    </div>
+                    <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">My Timesheet</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clock In</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clock Out</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hours</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timesheet-body" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="view hidden">
+            <header class="bg-white shadow-md">
+                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <div class="text-2xl font-bold text-gray-800">Admin Dashboard</div>
+                    <div class="flex items-center space-x-4">
+                        <img id="admin-avatar" class="avatar" alt="Admin Avatar">
+                        <span class="font-medium">Welcome, Admin!</span>
+                        <button id="admin-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Logout</button>
+                    </div>
+                </nav>
+            </header>
+            <main class="container mx-auto p-6 space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Live Employee Attendance</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                           <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Clock In</th>
+                                </tr>
+                            </thead>
+                            <tbody id="live-attendance-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold">Employee Management</h2>
+                        <button id="add-employee-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Add User
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                           <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employee-list-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Attendance Reports</h2>
+                    <div class="flex items-center gap-4 flex-wrap">
+                         <select id="report-employee-select" class="input w-full sm:w-auto max-w-xs">
+                             <option value="all">All Employees</option>
+                         </select>
+                         <button id="print-report-btn" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 flex items-center gap-2">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Print Report
+                        </button>
+                        <button id="export-csv-btn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 flex items-center gap-2">
+                            <i data-lucide="sheet" class="w-4 h-4"></i> Export to CSV
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div id="add-edit-user-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
+            <h2 id="modal-title" class="text-2xl font-bold text-gray-700 mb-6">Add New User</h2>
+            <form id="modal-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="modal-name" class="block text-sm font-medium text-gray-600">Full Name</label>
+                        <input type="text" id="modal-name" class="input" required>
+                    </div>
+                    <div>
+                        <label for="modal-staff-id" class="block text-sm font-medium text-gray-600">Staff ID</label>
+                        <input type="text" id="modal-staff-id" class="input" required>
+                    </div>
+                    <div>
+                        <label for="modal-email" class="block text-sm font-medium text-gray-600">Email</label>
+                        <input type="email" id="modal-email" class="input" required>
+                    </div>
+                    <div>
+                        <label for="modal-password" class="block text-sm font-medium text-gray-600">Password</label>
+                        <input type="password" id="modal-password" class="input" placeholder="Leave blank to keep unchanged">
+                    </div>
+                    <div>
+                        <label for="modal-department" class="block text-sm font-medium text-gray-600">Department</label>
+                        <input type="text" id="modal-department" class="input" required>
+                    </div>
+                    <div>
+                        <label for="modal-sex" class="block text-sm font-medium text-gray-600">Sex</label>
+                        <select id="modal-sex" class="input" required>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                     <div class="md:col-span-2">
+                        <label for="modal-role" class="block text-sm font-medium text-gray-600">Role</label>
+                        <select id="modal-role" class="input" required>
+                            <option value="employee">Employee</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-4">
+                    <img id="modal-pic-preview" src="https://placehold.co/100x100/e2e8f0/e2e8f0" alt="Profile preview" class="profile-pic-preview"/>
+                    <div>
+                        <label for="modal-picture" class="block text-sm font-medium text-gray-600">Profile Picture</label>
+                        <input type="file" id="modal-picture" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                </div>
+                <p id="modal-error" class="text-red-500 text-sm text-center my-4"></p>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancel-modal-btn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-400">Cancel</button>
+                    <button type="submit" id="save-modal-btn" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirm-delete-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm text-center">
+            <h2 class="text-xl font-bold mb-4">Are you sure?</h2>
+            <p class="text-gray-600 mb-6">This action cannot be undone. All data for this user will be permanently deleted.</p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-delete-btn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-400">Cancel</button>
+                <button id="confirm-delete-btn" class="bg-red-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-xl transition-opacity duration-300">
+        Notification message
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+
+        // --- ELEMENT REFERENCES ---
+        const views = {
+            login: document.getElementById('login-view'),
+            signup: document.getElementById('signup-view'),
+            employee: document.getElementById('employee-view'),
+            admin: document.getElementById('admin-view'),
+        };
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const employeeLoginBtn = document.getElementById('employee-login-btn');
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        const showSignupLink = document.getElementById('show-signup-link');
+        const showLoginLink = document.getElementById('show-login-link');
+        const signupForm = document.getElementById('signup-form');
+        const signupPicPreview = document.getElementById('signup-pic-preview');
+        const signupPictureInput = document.getElementById('signup-picture');
+        const signupError = document.getElementById('signup-error');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const employeeLogoutBtn = document.getElementById('employee-logout-btn');
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const employeeAvatar = document.getElementById('employee-avatar');
+        const adminAvatar = document.getElementById('admin-avatar');
+        const currentTimeEl = document.getElementById('current-time');
+        const currentDateEl = document.getElementById('current-date');
+        const employeeStatusEl = document.getElementById('employee-status');
+        const clockBtn = document.getElementById('clock-btn');
+        const timesheetBody = document.getElementById('timesheet-body');
+        const liveAttendanceBody = document.getElementById('live-attendance-body');
+        const employeeListBody = document.getElementById('employee-list-body');
+        const addEmployeeBtn = document.getElementById('add-employee-btn');
+        const reportEmployeeSelect = document.getElementById('report-employee-select');
+        const printReportBtn = document.getElementById('print-report-btn');
+        const exportCsvBtn = document.getElementById('export-csv-btn');
+        const addEditUserModal = document.getElementById('add-edit-user-modal');
+        const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const toast = document.getElementById('toast');
+        const modalForm = document.getElementById('modal-form');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        
+        // --- STATE & DB ---
+        let state = {
+            currentUser: null,
+            clockedIn: false,
+            clockInTime: null,
+            editingUserEmail: null,
+            deletingUserEmail: null,
+            userPictureData: null,
+        };
+        let db;
+
+        // --- DATABASE FUNCTIONS (localStorage) ---
+        const loadDB = () => {
+            const dbJson = localStorage.getItem('timeTrackDB');
+            if (dbJson) {
+                db = JSON.parse(dbJson);
+            } else {
+                db = {
+                    users: {
+                        'admin@example.com': { name: 'Admin User', role: 'admin', password: 'admin123', staffId: 'A001', department: 'Management', sex: 'Male', picture: 'https://placehold.co/100x100/e2e8f0/3949ab?text=A' },
+                        'employee@example.com': { name: 'Jane Doe', role: 'employee', password: 'password123', staffId: 'E001', department: 'Sales', sex: 'Female', picture: 'https://placehold.co/100x100/e2e8f0/7c3aed?text=J' },
+                        'employee2@example.com': { name: 'John Smith', role: 'employee', password: 'password123', staffId: 'E002', department: 'Engineering', sex: 'Male', picture: 'https://placehold.co/100x100/e2e8f0/f59e0b?text=J' },
+                    },
+                    timesheets: {
+                        'employee@example.com': [{ date: '2025-09-08', clockIn: '09:01 AM', clockOut: '05:03 PM', total: '8h 2m', clockInTimeRaw: new Date('2025-09-08T09:01:00').toISOString() }],
+                    },
+                    liveStatus: {
+                        'employee@example.com': { status: 'Clocked Out', lastClockIn: '2025-09-08 09:01 AM' },
+                        'employee2@example.com': { status: 'Clocked Out', lastClockIn: 'N/A' }
+                    }
+                };
+                saveDB();
+            }
+        };
+
+        const saveDB = () => localStorage.setItem('timeTrackDB', JSON.stringify(db));
+
+        // --- UTILITY FUNCTIONS ---
+        const showView = (viewName) => {
+            Object.values(views).forEach(view => view.classList.add('hidden'));
+            if (views[viewName]) views[viewName].classList.remove('hidden');
+        };
+
+        const showToast = (message, isError = false) => {
+            toast.textContent = message;
+            toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-xl transition-opacity duration-300 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        };
+
+        const formatTime = (date) => new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        const calculateDuration = (start, end) => {
+            const diffMs = new Date(end) - new Date(start);
+            if(isNaN(diffMs) || diffMs < 0) return 'N/A';
+            const hours = Math.floor(diffMs / 3600000);
+            const minutes = Math.floor((diffMs % 3600000) / 60000);
+            return `${hours}h ${minutes}m`;
+        };
+        
+        const getBase64 = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        // --- RENDER FUNCTIONS ---
+        const renderTimesheet = () => {
+            if (!state.currentUser) return;
+            const userTimesheet = db.timesheets[state.currentUser.email] || [];
+            timesheetBody.innerHTML = '';
+            [...userTimesheet].sort((a, b) => new Date(b.clockInTimeRaw) - new Date(a.clockInTimeRaw)).forEach(entry => {
+                const row = `<tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entry.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entry.clockIn}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entry.clockOut || '---'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${entry.total || '---'}</td>
+                </tr>`;
+                timesheetBody.innerHTML += row;
+            });
+        };
+        
+        const updateClockAndStatus = () => {
+             if (!views.employee.classList.contains('hidden')) {
+                const now = new Date();
+                currentTimeEl.textContent = formatTime(now);
+                currentDateEl.textContent = formatDate(now);
+                if (state.clockedIn) {
+                    employeeStatusEl.textContent = `Clocked in since ${formatTime(state.clockInTime)}`;
+                    employeeStatusEl.className = 'mb-4 text-xl font-semibold text-green-600';
+                    clockBtn.textContent = 'Clock Out';
+                    clockBtn.className = 'w-48 bg-red-500 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105';
+                } else {
+                    employeeStatusEl.textContent = 'You are currently clocked out.';
+                    employeeStatusEl.className = 'mb-4 text-xl font-semibold text-gray-500';
+                    clockBtn.textContent = 'Clock In';
+                    clockBtn.className = 'w-48 bg-green-500 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105';
+                }
+            }
+        };
+
+        const renderAdminDashboard = () => {
+            liveAttendanceBody.innerHTML = '';
+            Object.entries(db.users).filter(([, user]) => user.role === 'employee').forEach(([email, user]) => {
+                const statusInfo = db.liveStatus[email] || { status: 'N/A', lastClockIn: 'N/A' };
+                const statusClass = statusInfo.status === 'Clocked In' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+                const row = `<tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3">
+                        <img src="${user.picture}" class="avatar" alt="Avatar"> ${user.name}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${statusInfo.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${statusInfo.lastClockIn}</td>
+                </tr>`;
+                liveAttendanceBody.innerHTML += row;
+            });
+
+            employeeListBody.innerHTML = '';
+            Object.entries(db.users).forEach(([email, user]) => {
+                const row = `<tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3">
+                        <img src="${user.picture}" class="avatar" alt="Avatar">
+                        <div>${user.name}<br><span class="text-xs text-gray-500">${email}</span></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.staffId}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">${user.role}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="edit-btn text-indigo-600 hover:text-indigo-900" data-email="${email}">Edit</button>
+                        ${email !== state.currentUser.email ? `<button class="delete-btn text-red-600 hover:text-red-900 ml-4" data-email="${email}">Delete</button>` : ''}
+                    </td>
+                </tr>`;
+                employeeListBody.innerHTML += row;
+            });
+            
+            reportEmployeeSelect.innerHTML = `<option value="all">All Employees</option>`;
+            Object.entries(db.users).filter(([, user]) => user.role === 'employee').forEach(([email, user]) => {
+                reportEmployeeSelect.innerHTML += `<option value="${email}">${user.name}</option>`;
+            });
+        };
+
+        // --- EVENT HANDLERS ---
+        const handleLogin = (role) => {
+            const email = emailInput.value.toLowerCase();
+            const password = passwordInput.value;
+            const user = db.users[email];
+            if (user && user.password === password && user.role === role) {
+                state.currentUser = { email, ...user };
+                loginError.textContent = '';
+                loginForm.reset();
+                if (role === 'employee') {
+                    welcomeMsg.textContent = `Welcome, ${user.name}!`;
+                    employeeAvatar.src = user.picture;
+                    const userTimesheet = db.timesheets[email] || [];
+                    const lastEntry = userTimesheet.length > 0 ? userTimesheet[userTimesheet.length - 1] : null;
+                    state.clockedIn = !!(lastEntry && lastEntry.clockIn && !lastEntry.clockOut);
+                    if (state.clockedIn) state.clockInTime = new Date(lastEntry.clockInTimeRaw);
+                    renderTimesheet();
+                    updateClockAndStatus();
+                    showView('employee');
+                } else {
+                    adminAvatar.src = user.picture;
+                    renderAdminDashboard();
+                    showView('admin');
+                }
+            } else {
+                loginError.textContent = 'Invalid credentials or role mismatch.';
+            }
+        };
+
+        const handleSignup = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const staffId = document.getElementById('signup-staff-id').value;
+            const email = document.getElementById('signup-email').value.toLowerCase();
+            const password = document.getElementById('signup-password').value;
+            const department = document.getElementById('signup-department').value;
+            const sex = document.getElementById('signup-sex').value;
+            const pictureFile = document.getElementById('signup-picture').files[0];
+            if(db.users[email]){
+                signupError.textContent = 'An account with this email already exists.';
+                return;
+            }
+            let picture = 'https://placehold.co/100x100/e2e8f0/64748b?text=' + name.charAt(0).toUpperCase();
+            if(pictureFile) picture = await getBase64(pictureFile);
+
+            db.users[email] = { name, staffId, role: 'employee', password, department, sex, picture };
+            db.timesheets[email] = [];
+            db.liveStatus[email] = { status: 'Clocked Out', lastClockIn: 'N/A' };
+            saveDB();
+            
+            showToast('Account created successfully!');
+            signupForm.reset();
+            signupPicPreview.src = 'https://placehold.co/100x100/e2e8f0/e2e8f0';
+            showView('login');
+        };
+
+        const handleClockAction = () => {
+            const now = new Date();
+            const userTimesheet = db.timesheets[state.currentUser.email];
+            
+            if (!state.clockedIn) { // Clocking in
+                state.clockedIn = true;
+                state.clockInTime = now;
+                const newEntry = {
+                    date: now.toISOString().slice(0, 10),
+                    clockIn: formatTime(now),
+                    clockInTimeRaw: now.toISOString(),
+                    clockOut: null,
+                    total: null,
+                };
+                userTimesheet.push(newEntry);
+                db.liveStatus[state.currentUser.email] = { status: 'Clocked In', lastClockIn: `${newEntry.date} ${newEntry.clockIn}` };
+            } else { // Clocking out
+                state.clockedIn = false;
+                const lastEntry = userTimesheet[userTimesheet.length - 1];
+                lastEntry.clockOut = formatTime(now);
+                lastEntry.total = calculateDuration(state.clockInTime, now);
+                state.clockInTime = null;
+                db.liveStatus[state.currentUser.email].status = 'Clocked Out';
+            }
+            saveDB();
+            updateClockAndStatus();
+            renderTimesheet();
+        };
+
+        const openAddEditModal = (email = null) => {
+            modalForm.reset();
+            document.getElementById('modal-pic-preview').src = 'https://placehold.co/100x100/e2e8f0/e2e8f0';
+            document.getElementById('modal-email').disabled = false;
+            document.getElementById('modal-error').textContent = '';
+            state.userPictureData = null;
+
+            if (email) { // Editing
+                state.editingUserEmail = email;
+                const user = db.users[email];
+                document.getElementById('modal-title').textContent = 'Edit User';
+                document.getElementById('modal-name').value = user.name;
+                document.getElementById('modal-staff-id').value = user.staffId;
+                document.getElementById('modal-email').value = email;
+                document.getElementById('modal-email').disabled = true;
+                document.getElementById('modal-department').value = user.department;
+                document.getElementById('modal-sex').value = user.sex;
+                document.getElementById('modal-role').value = user.role;
+                document.getElementById('modal-pic-preview').src = user.picture;
+            } else { // Adding
+                state.editingUserEmail = null;
+                document.getElementById('modal-title').textContent = 'Add New User';
+            }
+            addEditUserModal.classList.remove('hidden');
+        };
+
+        const handleModalSubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('modal-name').value;
+            const staffId = document.getElementById('modal-staff-id').value;
+            const email = document.getElementById('modal-email').value.toLowerCase();
+            const password = document.getElementById('modal-password').value;
+            const department = document.getElementById('modal-department').value;
+            const sex = document.getElementById('modal-sex').value;
+            const role = document.getElementById('modal-role').value;
+
+            if (state.editingUserEmail) { // Update
+                const user = db.users[state.editingUserEmail];
+                user.name = name;
+                user.staffId = staffId;
+                if (password) user.password = password;
+                user.department = department;
+                user.sex = sex;
+                user.role = role;
+                if (state.userPictureData) user.picture = state.userPictureData;
+                showToast('User updated successfully!');
+            } else { // Create
+                if(db.users[email]){
+                    document.getElementById('modal-error').textContent = 'Email already exists.';
+                    return;
+                }
+                const picture = state.userPictureData || 'https://placehold.co/100x100/e2e8f0/64748b?text=' + name.charAt(0).toUpperCase();
+                db.users[email] = { name, staffId, role, password, department, sex, picture };
+                db.timesheets[email] = [];
+                db.liveStatus[email] = { status: 'Clocked Out', lastClockIn: 'N/A' };
+                showToast('User added successfully!');
+            }
+            saveDB();
+            renderAdminDashboard();
+            addEditUserModal.classList.add('hidden');
+        };
+
+        const handleDeleteUser = () => {
+            const email = state.deletingUserEmail;
+            if (email) {
+                delete db.users[email];
+                delete db.timesheets[email];
+                delete db.liveStatus[email];
+                saveDB();
+                renderAdminDashboard();
+                showToast('User deleted successfully!');
+            }
+            confirmDeleteModal.classList.add('hidden');
+            state.deletingUserEmail = null;
+        };
+
+        const handlePrintReport = () => {
+            const selectedEmployee = reportEmployeeSelect.value;
+            let reportTitle, reportData;
+
+            if (selectedEmployee === 'all') {
+                reportTitle = "All Employees Attendance Report";
+                reportData = Object.entries(db.timesheets).flatMap(([email, sheet]) => 
+                    sheet.map(entry => ({ ...entry, name: db.users[email].name, email }))
+                );
+            } else {
+                reportTitle = `${db.users[selectedEmployee].name} - Attendance Report`;
+                reportData = (db.timesheets[selectedEmployee] || []).map(entry => ({ ...entry, name: db.users[selectedEmployee].name, email: selectedEmployee }));
+            }
+            if (reportData.length === 0) {
+                showToast('No data available for this report.', true);
+                return;
+            }
+
+            const reportWindow = window.open('', '', 'height=600,width=800');
+            reportWindow.document.write(`
+                <html><head><title>${reportTitle}</title>
+                <style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background-color:#f2f2f2;}</style>
+                </head><body>
+                <h1>${reportTitle}</h1>
+                <p>Generated on: ${new Date().toLocaleString()}</p>
+                <table><thead><tr>
+                    ${selectedEmployee === 'all' ? '<th>Employee</th>' : ''}
+                    <th>Date</th><th>Clock In</th><th>Clock Out</th><th>Total Hours</th>
+                </tr></thead><tbody>
+                ${reportData.map(d => `<tr>
+                    ${selectedEmployee === 'all' ? `<td>${d.name}</td>` : ''}
+                    <td>${d.date}</td><td>${d.clockIn}</td><td>${d.clockOut || ''}</td><td>${d.total || ''}</td>
+                </tr>`).join('')}
+                </tbody></table>
+                </body></html>`);
+            reportWindow.document.close();
+            reportWindow.print();
+        };
+
+        const handleExportCsv = () => {
+            const selectedEmployee = reportEmployeeSelect.value;
+            let reportData;
+            const headers = selectedEmployee === 'all' ? ['Employee', 'Email', 'Date', 'Clock In', 'Clock Out', 'Total Hours'] : ['Date', 'Clock In', 'Clock Out', 'Total Hours'];
+            
+            if (selectedEmployee === 'all') {
+                reportData = Object.entries(db.timesheets).flatMap(([email, sheet]) => 
+                    sheet.map(entry => [db.users[email].name, email, entry.date, entry.clockIn, entry.clockOut || '', entry.total || ''])
+                );
+            } else {
+                reportData = (db.timesheets[selectedEmployee] || []).map(entry => [entry.date, entry.clockIn, entry.clockOut || '', entry.total || '']);
+            }
+             if (reportData.length === 0) {
+                showToast('No data available for this report.', true);
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...reportData.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `attendance_report_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+        
+        // --- EVENT LISTENERS ---
+        employeeLoginBtn.addEventListener('click', () => handleLogin('employee'));
+        adminLoginBtn.addEventListener('click', () => handleLogin('admin'));
+        showSignupLink.addEventListener('click', (e) => { e.preventDefault(); showView('signup'); });
+        showLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login'); });
+        signupForm.addEventListener('submit', handleSignup);
+        employeeLogoutBtn.addEventListener('click', () => { showView('login'); state.currentUser = null; });
+        adminLogoutBtn.addEventListener('click', () => { showView('login'); state.currentUser = null; });
+        clockBtn.addEventListener('click', handleClockAction);
+        addEmployeeBtn.addEventListener('click', () => openAddEditModal());
+        modalForm.addEventListener('submit', handleModalSubmit);
+        cancelModalBtn.addEventListener('click', () => addEditUserModal.classList.add('hidden'));
+        confirmDeleteBtn.addEventListener('click', handleDeleteUser);
+        cancelDeleteBtn.addEventListener('click', () => confirmDeleteModal.classList.add('hidden'));
+        printReportBtn.addEventListener('click', handlePrintReport);
+        exportCsvBtn.addEventListener('click', handleExportCsv);
+
+        signupPictureInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) signupPicPreview.src = URL.createObjectURL(e.target.files[0]);
+        });
+        document.getElementById('modal-picture').addEventListener('change', async (e) => {
+            if (e.target.files && e.target.files[0]) {
+                document.getElementById('modal-pic-preview').src = URL.createObjectURL(e.target.files[0]);
+                state.userPictureData = await getBase64(e.target.files[0]);
+            }
+        });
+        employeeListBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-btn')) openAddEditModal(e.target.dataset.email);
+            if (e.target.classList.contains('delete-btn')) {
+                state.deletingUserEmail = e.target.dataset.email;
+                confirmDeleteModal.classList.remove('hidden');
+            }
+        });
+        
+        // --- INITIALIZATION ---
+        loadDB();
+        setInterval(updateClockAndStatus, 1000 * 60); // Update time every minute
+        showView('login');
+    });
+    </script>
+</body>
+</html>
+
