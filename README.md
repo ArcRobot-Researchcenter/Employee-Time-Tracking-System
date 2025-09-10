@@ -1,6 +1,15 @@
 # Employee-Time-Tracking-System
 A complete, client-side Employee Time Tracking System built with modern web technologies. This application provides a seamless interface for employees to manage their work hours and for administrators to oversee the workforce. The entire application runs from a single HTML file and uses browser localStorage for data persistence, making it highly portable and easy to run without any server-side setup.
-✨ Features
+
+![Employee Time Tracking System ](https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/employeetime-clockingsystem.jpg) 
+
+https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/employeetime-clockingsystem.jpg
+
+![Time Attendance System](https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/timeattenance-system.jpg)
+
+https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/timeattenance-system.jpg
+
+## ✨ Features
 
 # This project is packed with features for both employees and administrators:
 ## Employee Features
