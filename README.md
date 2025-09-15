@@ -3,11 +3,9 @@ A complete, client-side Employee Time Tracking System built with modern web tech
 
 ![Employee Time Tracking System ](https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/employeetime-clockingsystem.jpg) 
 
-https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/employeetime-clockingsystem.jpg
 
 ![Time Attendance System](https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/timeattenance-system.jpg)
 
-https://github.com/ArcRobot-Researchcenter/Employee-Time-Tracking-System/raw/52a3a4f42db5e2864528d135ca750bb3c2aa849a/timeattenance-system.jpg
 
 ## ✨ Features
 
